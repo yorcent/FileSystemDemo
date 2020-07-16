@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <header>
+        <meta charset="utf-8">
+        <title>New File</title>
+        <style>
+        </style>
+    </header>
+    <body>
+        <div>
+            <form id="file-form" onsubmit="return submit()">
+                fileName:
+                <input type="text" style="height: 30px;margin-left: 15px;" id="fileName"><br/>
+                fileContent:
+                <textarea rows="10" style="vertical-align: top; width: 300px;" id="content"></textarea><br/>
+                <input type="button" value="Save" style="margin: 20px; font-size: 20px;"></input>
+            </form>
+        </div>
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript">
+            function submit() {
+                console.log('sfsfs')
+                // var formData = new FormData(document.getElementById("file_form"));
+                debugger
+                const params = {
+                    fileName: document.getElementById("fileName").innerText,
+                    fileContent: document.getElementById("content").innerText
+                }
+                // 通过Ajax实现上传
+                $.ajax({
+                    url:"http://localhost:8080/file/fileCreate",
+                    type:"POST",
+                    data:params,
+                    async: true,
+                    success:function(data){
+                        console.log("success: ", data);
+                    },
+                    error:function(error){
+                        alert("error: ", error);
+                    }
+                })
+            }
+        </script>
+    </body>
+</html>
