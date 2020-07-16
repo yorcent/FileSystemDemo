@@ -8,23 +8,22 @@
     </header>
     <body>
         <div>
-            <form id="file-form" onsubmit="return submit()">
+            <form id="file-form">
                 fileName:
                 <input type="text" style="height: 30px;margin-left: 15px;" id="fileName"><br/>
                 fileContent:
                 <textarea rows="10" style="vertical-align: top; width: 300px;" id="content"></textarea><br/>
-                <input type="button" value="Save" style="margin: 20px; font-size: 20px;"></input>
+                <!-- <button onclick="submit">submit</button> -->
+                <input type="button" value="Save" onclick="submitFile()" style="margin: 20px; font-size: 20px;"></input>
             </form>
         </div>
         <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
         <script type="text/javascript">
-            function submit() {
-                console.log('sfsfs')
+            function submitFile() {
                 // var formData = new FormData(document.getElementById("file_form"));
-                debugger
                 const params = {
-                    fileName: document.getElementById("fileName").innerText,
-                    fileContent: document.getElementById("content").innerText
+                    fileName: document.getElementById("fileName").value,
+                    fileContent: document.getElementById("content").value
                 }
                 // 通过Ajax实现上传
                 $.ajax({
@@ -32,6 +31,7 @@
                     type:"POST",
                     data:params,
                     async: true,
+                    contentType: 'Content-type=text/plain;charset=UTF-8',
                     success:function(data){
                         console.log("success: ", data);
                     },

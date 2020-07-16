@@ -3,8 +3,10 @@ const express=require('express')
 const path = require('path')
 const fs = require('fs')
 const url = require('url')
+const bodyParser = require('body-parser')
 
 const app=express()
+app.use(bodyParser.urlencoded({ extended: false }))
 const hostname = '127.0.0.1'
 const port = 8080
 const server= http.createServer(app);
@@ -45,16 +47,19 @@ app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");  
     res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");  
     res.header("Content-Type", "application/json;charset=utf-8");  
-    next();  
+    next();     
 });
 
 app.post('/file/fileCreate', function(req, res) {
     // res.setHeader("Access-Control-Allow-Origin","*");
-    debugger
-    req.on('data',function(data){
-        const obj=JSON.parse(data);
-        console.log(obj);
+    let data = ''
+    console.log(req.body)
+    req.on('data',function(params){
+        data += params
         res.send('success')
+    })
+    req.on('end', function() {
+        console.log(data)
     })
   })
 app.get('/', function(req, res) {
