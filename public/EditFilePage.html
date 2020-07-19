@@ -20,6 +20,10 @@
             const url = window.location.search
             const fileName = url.split('=')[1]
             const baseUrl = 'http://localhost:8080'
+            // 如果不是从viewFilePage 进入此编辑页面，则自动回到viewFilePage页面
+            if (!fileName) {
+                window.open(`${baseUrl}/ViewFilePage.html`, '_blank')
+            }
             // 获取当前文件的内容展示到文本框中
             $.ajax({
                 type: 'get',
