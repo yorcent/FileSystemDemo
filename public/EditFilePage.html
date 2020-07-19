@@ -7,7 +7,7 @@
         <style>
         </style>
     </header>
-    <body>
+    <body onbeforeunload="pageUnload()">
         <form id="file_form">
             fileContent:
             <textarea rows="10" style="vertical-align: top; width: 300px;" id="content"></textarea><br/>
@@ -26,10 +26,45 @@
                 async: true,
                 url: `${baseUrl}/files/${fileName}.txt`,
                 success: function (result) {
-                    document.getElementById('content').innerText = result
-                    // _this.$refs.textarea.value = result
+                    const textarea = document.getElementById('content')
+                    textarea.innerText = result
+                    const currentFile = localStorage.getItem(fileName)
+                    // 如果当前文件还ls中，则文本框不能编辑，一分钟后才能编辑（临时方案）
+                    if (currentFile && currentFile === fileName){
+                        textarea.disabled = true
+                        // 一秒钟轮询一次ls, 一单当前文件一分钟之后被释放，则文本框可以编辑
+                        const interval = setInterval(() => {
+                            const currentFile = localStorage.getItem(fileName)
+                            if (!currentFile){
+                                textarea.disabled = false
+                                localStorage.setItem(fileName, fileName)
+                                // 重新开始锁定一分钟，一分钟之后在ls中清掉当前文件的缓存
+                                const timeout = setTimeout(() => {
+                                    localStorage.removeIte(fileName)
+                                    clearTimeout(timeout)
+                                    timeout = null
+                                }, 60*1000)
+                                clearInterval(interval)
+                                interval = null
+                            }
+                        }, 1000)
+                    } else {
+                        localStorage.setItem(fileName, fileName)
+                        // 锁定一分钟，一分钟之后在ls中清掉当前文件的缓存
+                        const timeout = setTimeout(() => {
+                            localStorage.removeItem(fileName)
+                            clearTimeout(timeout)
+                            timeout = null
+                        }, 60*1000)
+                    }
                 }
             })
+            // 页面或者浏览器关闭时，移除当前文件在ls中的缓存
+            function pageUnload () {
+                if (localStorage.getItem(fileName) === fileName) {
+                    localStorage.removeItem(fileName)
+                }
+            }
             // 提交文件修改
             function submitFile() {
                 const formData = new FormData()
