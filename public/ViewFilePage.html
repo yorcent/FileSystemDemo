@@ -4,20 +4,42 @@
         <meta charset="utf-8">
         <title>View File</title>
         <style>
+            .btn {
+                margin: 20px;
+                font-size: 20px;
+            }
         </style>
     </header>
     <body>
         <div>
             <h3>File list</h3>
-            <ul>
-                <li><a>file1</a><button onclick="submit" style="margin: 20px; font-size: 20px;">submit</button></li>
-                <li><a>file2</a><button onclick="submit" style="margin: 20px; font-size: 20px;">submit</button></li>
+            <ul id="fileList">
+                <!-- <li><a>file1</a><button onclick="editFile()" style="margin: 20px; font-size: 20px;">E?dit</button></li> -->
             </ul>
         </div>
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
         <script>
-            function submit() {
-                debugger
-                // todo ajax
+            const baseUrl = 'http://localhost:8080'
+            // 获取所有文件
+            $.ajax({
+                url:`${baseUrl}/file/list`,
+                type:"get",
+                dataType: 'json',
+                processData: false,
+                success:function(data){
+                    console.log("success: ", data)
+                    let liElements = ''
+                    data.forEach(i => {
+                        liElements += `<li><a href="${baseUrl}/files/${i.fileName}.txt" download>${i.fileName}</a><button onClick="editFile('${i.fileName}')" class="btn">Edit</button></li>`
+                        document.getElementById("fileList").innerHTML = liElements
+                    })
+                },
+                error:function(error){
+                    alert("error: ", error)
+                }
+            })
+            function editFile(fileName) {
+                window.open(`${baseUrl}/EditFilePage.html?filename=${fileName}`, '_blank')
             }
         </script>
     </body>

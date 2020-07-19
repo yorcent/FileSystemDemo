@@ -8,5 +8,58 @@
         </style>
     </header>
     <body>
+        <form id="file_form">
+            fileContent:
+            <textarea rows="10" style="vertical-align: top; width: 300px;" id="content"></textarea><br/>
+            <!-- <button onclick="submit">submit</button> -->
+            <input type="button" value="Save" onclick="submitFile()" style="margin: 20px; font-size: 20px;"></input>
+        </form>
+        <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="./js/base64.js"></script>
+        <script type="text/javascript">
+            const url = window.location.search
+            const fileName = url.split('=')[1]
+            const baseUrl = 'http://localhost:8080'
+            // 获取当前文件的内容展示到文本框中
+            $.ajax({
+                type: 'get',
+                async: true,
+                url: `${baseUrl}/files/${fileName}.txt`,
+                success: function (result) {
+                    document.getElementById('content').innerText = result
+                    // _this.$refs.textarea.value = result
+                }
+            })
+            // 提交文件修改
+            function submitFile() {
+                const formData = new FormData()
+                const fileBase64 = Base64.encode(document.getElementById("content").value)
+                // const fileBlob = new Blob([document.getElementById("content").value], {type: 'text/plain;charset=utf-8'})
+                // formData.append("file",fileBlob)
+                const params = {
+                    fileName: fileName,
+                    file: fileBase64
+                }
+                // 提交base6格式的文件内容数据
+                $.ajax({
+                    url:`${baseUrl}/file/fileCreate`,
+                    type:"put",
+                    data:JSON.stringify(params),
+                    // data: formData,
+                    dataType: 'text',
+                    processData: false,
+                    headers: { 
+                        'Content-Type': 'application/json', //'application/x-www-form-urlencoded'  // 'multipart/form-data'
+                    },
+                    success:function(data){
+                        console.log("success: ", data)
+                        alert(`success: ${data}`, );
+                    },
+                    error:function(error){
+                        alert(`error: ${error}`, )
+                    }
+                })
+            }
+        </script>
     </body>
 </html>

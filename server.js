@@ -1,40 +1,23 @@
-const http = require('http')
 const express=require('express')
+const http = require('http')
 const path = require('path')
 const fs = require('fs')
-const url = require('url')
-const bodyParser = require('body-parser')
+// const bodyParser = require('body-parser')
+const file = './public/fileList.db'
+const dbFile = fs.existsSync(file)
+const sqlite3 = require('sqlite3').verbose()
+
+const db = new sqlite3.Database(file, function() {
+    if (!dbFile) {
+        db.run("create table if not exists files(fileName varchar(1000) PRIMARY KEY)")
+    }
+})
 
 const app=express()
-app.use(bodyParser.urlencoded({ extended: false }))
+// app.use(bodyParser.urlencoded({ extended: false }))
 const hostname = '127.0.0.1'
+const server= http.createServer(app)
 const port = 8080
-const server= http.createServer(app);
-// 创建服务
-// const server = http.createServer(function (request, response) {
-//     debugger
-//     // 获得URL的path
-//     const pathname = url.parse(request.url).pathname;
-//     // 获得对应的本地文件路径
-//     const filepath = path.join(root, pathname);
-//     console.log('pathname', pathname, filepath)
-//     // 获取文件状态:
-//     fs.stat(filepath, function (err, stats) {
-//         if (!err && stats.isFile()) {
-//             // 没有出错并且文件存在:
-//             console.log('200 ' + request.url);
-//             response.writeHead(200);
-//             // 将文件流导向response:
-//             fs.createReadStream(filepath).pipe(response);
-//         } else {
-//             // 出错了或者文件不存在:
-//             console.log('404 ' + request.url);
-//             // 发送404响应:
-//             response.writeHead(404);
-//             response.end('404 Not Found');
-//         }
-//     });
-// });
 
 server.listen(port, function() {
     console.log(`服务器运行在 http://${hostname}:${port}/`)
@@ -51,17 +34,56 @@ app.all('*', function(req, res, next) {
 });
 
 app.post('/file/fileCreate', function(req, res) {
-    // res.setHeader("Access-Control-Allow-Origin","*");
-    let data = ''
-    console.log(req.body)
+    let data = []
     req.on('data',function(params){
         data += params
-        res.send('success')
     })
     req.on('end', function() {
-        console.log(data)
+        let params = JSON.parse(data)
+        const dataBuffer = new Buffer.from(params.file, 'base64')
+        const files = './public/files'
+        if (!fs.existsSync(files)) {
+            fs.mkdirSync(files)
+        }
+        // 写入文件
+        fs.writeFile(`public/files/${params.fileName}.txt`, dataBuffer, function(err) {
+            if(err){
+                res.send(err)
+            }else{
+                // 文件名保存在files表中
+                const sql1 = db.prepare(`insert into files values ('${params.fileName}')`)
+                sql1.run()
+                console.log(sql1)
+                res.send("保存成功！")
+            }
+        });
     })
-  })
-app.get('/', function(req, res) {
-    res.end('');
+})
+app.put('/file/fileCreate', function(req, res) {
+    let data = []
+    req.on('data',function(params){
+        data += params
+    })
+    req.on('end', function() {
+        let params = JSON.parse(data)
+        const dataBuffer = new Buffer.from(params.file, 'base64')
+        fs.writeFile(`public/files/${params.fileName}.txt`, dataBuffer, function(err) {
+            if(err){
+                res.send(err)
+            }else{
+                res.send("保存成功！")
+            }
+        });
+    })
+})
+app.get('/file/list', function(req, res) {
+    const data = []
+    // 从数据库中获取所有的文件名
+    db.all('select * from files', function(error, row) {
+        if (!error) {
+            res.send(row)
+        } else {
+            res.send([])
+        }
+    })
 })

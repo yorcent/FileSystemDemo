@@ -8,7 +8,7 @@
     </header>
     <body>
         <div>
-            <form id="file-form">
+            <form id="file_form">
                 fileName:
                 <input type="text" style="height: 30px;margin-left: 15px;" id="fileName"><br/>
                 fileContent:
@@ -18,25 +18,35 @@
             </form>
         </div>
         <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+        <script type="text/javascript" src="./js/base64.js"></script>
         <script type="text/javascript">
+            // 提交数据
             function submitFile() {
-                // var formData = new FormData(document.getElementById("file_form"));
+                // const formData = new FormData()
+                const fileBase64 = Base64.encode(document.getElementById("content").value)
+                // const fileBlob = new Blob([document.getElementById("content").value], {type: 'text/plain;charset=utf-8'})
+                // formData.append("file",fileBlob) // 也可以采用提交blob格式文件的形式
                 const params = {
                     fileName: document.getElementById("fileName").value,
-                    fileContent: document.getElementById("content").value
+                    file: fileBase64
                 }
-                // 通过Ajax实现上传
+                // 提交base6格式的文件内容数据
                 $.ajax({
                     url:"http://localhost:8080/file/fileCreate",
-                    type:"POST",
-                    data:params,
-                    async: true,
-                    contentType: 'Content-type=text/plain;charset=UTF-8',
+                    type:"post",
+                    data:JSON.stringify(params),
+                    // data: formData,
+                    dataType: 'text',
+                    processData: false,
+                    headers: { 
+                        'Content-Type': 'application/json', //'application/x-www-form-urlencoded'  // 'multipart/form-data'
+                    },
                     success:function(data){
-                        console.log("success: ", data);
+                        console.log("success: ", data)
+                        alert(`success: ${data}`)
                     },
                     error:function(error){
-                        alert("error: ", error);
+                        alert(`error: ${error}`)
                     }
                 })
             }
