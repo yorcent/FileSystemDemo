@@ -71,8 +71,13 @@
             }
             // 提交文件修改
             function submitFile() {
-                const formData = new FormData()
-                const fileBase64 = Base64.encode(document.getElementById("content").value)
+                // const formData = new FormData()
+                const fileContent = document.getElementById("content").value
+                if (!fileContent){
+                    alert('文件内容不能为空')
+                    return
+                }
+                const fileBase64 = Base64.encode(fileContent)
                 // const fileBlob = new Blob([document.getElementById("content").value], {type: 'text/plain;charset=utf-8'})
                 // formData.append("file",fileBlob)
                 const params = {
@@ -92,10 +97,10 @@
                     },
                     success:function(data){
                         console.log("success: ", data)
-                        alert(`success: ${data}`, );
+                        alert(`success: ${data}`);
                     },
                     error:function(error){
-                        alert(`error: ${error}`, )
+                        alert(`error: ${error}`)
                     }
                 })
             }
