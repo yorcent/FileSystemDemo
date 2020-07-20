@@ -36,11 +36,23 @@
                     // 如果当前文件还ls中，则文本框不能编辑，一分钟后才能编辑（临时方案）
                     if (currentFile && currentFile === fileName){
                         textarea.disabled = true
-                        // 一秒钟轮询一次ls, 一单当前文件一分钟之后被释放，则文本框可以编辑
+                        // 一秒钟轮询一次ls, 一旦当前文件一分钟之后被释放，则文本框可以编辑
                         const interval = setInterval(() => {
                             const currentFile = localStorage.getItem(fileName)
                             if (!currentFile){
                                 textarea.disabled = false
+                                // 重新获取最新的文件内容到文本框
+                                $.ajax({
+                                    type: 'get',
+                                    async: true,
+                                    url: `${baseUrl}/files/${fileName}.txt`,
+                                    success: function (result) {
+                                        textarea.innerText = result
+                                    },
+                                    error: function (error) {
+                                        alert(`error: ${error}`)
+                                    }
+                                })
                                 localStorage.setItem(fileName, fileName)
                                 // 重新开始锁定一分钟，一分钟之后在ls中清掉当前文件的缓存
                                 const timeout = setTimeout(() => {
@@ -61,6 +73,9 @@
                             timeout = null
                         }, 60*1000)
                     }
+                },
+                error: function (error) {
+                    alert(`error: ${error}`)
                 }
             })
             // 页面或者浏览器关闭时，移除当前文件在ls中的缓存
