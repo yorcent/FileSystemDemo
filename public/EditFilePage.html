@@ -55,7 +55,7 @@
                                 })
                                 localStorage.setItem(fileName, fileName)
                                 // 重新开始锁定一分钟，一分钟之后在ls中清掉当前文件的缓存
-                                const timeout = setTimeout(() => {
+                                let timeout = setTimeout(() => {
                                     localStorage.removeItem(fileName)
                                     clearTimeout(timeout)
                                     timeout = null
