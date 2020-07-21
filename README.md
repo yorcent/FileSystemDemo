@@ -4,11 +4,10 @@
 a demo for operating files(upload，edit，read)
 
 # node-module:
-## express: nmp install -save express
-## sqlite3: npm install -save sqlite3
+npm install
 
 # run server:
-node ./server.js
+npm start
 
 # new file page:
 localhost:8080

@@ -1,0 +1,31 @@
+{
+  "name": "file-system-demo",
+  "version": "1.0.0",
+  "description": "a a demo for operating files(upload，edit，read)",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yorcent/FileSystemDemo.git"
+  },
+  "keywords": [
+    "file",
+    "upload",
+    "download",
+    "localstorage"
+  ],
+  "author": "Chengrong Luo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yorcent/FileSystemDemo/issues"
+  },
+  "homepage": "https://github.com/yorcent/FileSystemDemo#readme"
+}
